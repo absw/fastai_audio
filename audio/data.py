@@ -14,7 +14,6 @@ import torchaudio
 import warnings
 from torchaudio.transforms import MelSpectrogram, Spectrogram, AmplitudeToDB, MFCC
 
-
 class EmptyFileException(Exception):
     pass
 
@@ -43,9 +42,13 @@ class SpectrogramConfig:
     top_db: int = 100
     win_length: int = None
     n_mfcc: int = 20
+    custom_spectro: int = None
+    #def mel_args(self):
+    #    return {k:v for k, v in asdict(self).items() if k in ["f_min", "f_max", "hop_length", "n_fft", 
+    #                                                  "n_mels", "pad", "win_length"]}
     def mel_args(self):
-        return {k:v for k, v in asdict(self).items() if k in ["f_min", "f_max", "hop_length", "n_fft", 
-                                                      "n_mels", "pad", "win_length"]}
+        return {k:v for k, v in asdict(self).items() if k in ["hop_length", "n_fft", 
+                                                      "n_mels", "win_length"]}
     def spectro_args(self):
         return {k:v for k, v in asdict(self).items() if k in ["hop_length", "n_fft", 
                                                       "pad", "win_length"]}
@@ -365,11 +368,18 @@ class AudioList(ItemList):
         if self.config.mfcc: 
             mel = MFCC(sample_rate=item.sr, n_mfcc=self.config.sg_cfg.n_mfcc, melkwargs=self.config.sg_cfg.mel_args())(item.sig)
         else:
-            if self.config.sg_cfg.n_mels > 0:
-              mel = MelSpectrogram(**(self.config.sg_cfg.mel_args()))(item.sig)
+            if self.config.sg_cfg.custom_spectro != None:
+                mel = self.config.sg_cfg.custom_spectro(item.sig)
             else:
-              mel = Spectrogram(**(self.config.sg_cfg.spectro_args()))(item.sig)
-            
+                if self.config.sg_cfg.n_mels > 0:
+                  #mel = MelSpectrogram(**(self.config.sg_cfg.mel_args()))(item.sig)
+                  c = self.config.sg_cfg
+                  mel = librosa.feature.melspectrogram(y=np.array(item.sig[0,:]), sr=item.sr, fmax=c.f_max, fmin=c.f_min, **(self.config.sg_cfg.mel_args()))
+                
+                  mel = torch.from_numpy(mel)
+                  mel.unsqueeze_(0)  
+                else:
+                  mel = Spectrogram(**(self.config.sg_cfg.spectro_args()))(item.sig)
             if self.config.sg_cfg.to_db_scale: 
                 mel = AmplitudeToDB(top_db=self.config.sg_cfg.top_db)(mel)
         mel = mel.detach()
