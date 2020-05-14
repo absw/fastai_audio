@@ -4,7 +4,7 @@ setup(
     name='audio',
     version="0.0.1",
     description='fastai_audio, Bluefruit fork',
-    url='https://github.com/nigel-croft-bluefruit/fastai_audio',
+    url='https://github.com/absw/fastai_audio',
     author='Bluefire Team',
     author_email='bluefire@bluefruit.co.uk',
     license='MIT',

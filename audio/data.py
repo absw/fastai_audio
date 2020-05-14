@@ -373,7 +373,6 @@ class AudioList(ItemList):
                 mel = self.config.sg_cfg.custom_spectro(item.sig)
             else:
                 if self.config.sg_cfg.n_mels > 0:
-                  #mel = MelSpectrogram(**(self.config.sg_cfg.mel_args()))(item.sig)
                   c = self.config.sg_cfg
                   mel = librosa.feature.melspectrogram(y=np.array(item.sig[0,:]), sr=item.sr, fmax=c.f_max, fmin=c.f_min, **(self.config.sg_cfg.mel_args()))
                 
