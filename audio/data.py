@@ -47,9 +47,6 @@ class SpectrogramConfig:
     win_length: int = None
     n_mfcc: int = 20
     custom_spectro: int = None
-    #def mel_args(self):
-    #    return {k:v for k, v in asdict(self).items() if k in ["f_min", "f_max", "hop_length", "n_fft", 
-    #                                                  "n_mels", "pad", "win_length"]}
     def mel_args(self):
         return {k:v for k, v in asdict(self).items() if k in ["hop_length", "n_fft", 
                                                       "n_mels", "win_length"]}
@@ -482,4 +479,3 @@ def open_audio(fn: Path, after_open: Callable = None) -> AudioItem:
         else:
             err_msg = f"{err_msg} with Torch Audio: {e}"
             raise RuntimeError(err_msg)
-
