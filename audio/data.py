@@ -18,6 +18,10 @@ class EmptyFileException(Exception):
     pass
 
 
+class EmptyFileException(Exception):
+    pass
+
+
 def md5(s):
     return hashlib.md5(s.encode("utf-8")).hexdigest()
 
